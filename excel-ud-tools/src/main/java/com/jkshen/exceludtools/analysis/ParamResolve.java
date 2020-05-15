@@ -5,6 +5,7 @@ import com.jkshen.exceludtools.annotation.FieldExcel;
 import com.jkshen.exceludtools.annotation.FieldRegExp;
 import com.jkshen.exceludtools.utils.ParamUtils;
 import com.jkshen.exceludtools.validtor.Regex;
+import org.apache.poi.ss.usermodel.Cell;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -21,12 +22,11 @@ import java.util.stream.Collectors;
 public class ParamResolve {
     /**
      * 解析文件
-     * @param in
      * @param excelClass 和excel对应的实体类对象
      * @param ignores 过滤字段（实体类有注解excel没有字段需要过滤）
      * @return
      */
-    public static List<Field> resolveInstance(InputStream in, Class<?> excelClass, String... ignores){
+    public static List<Field> resolveInstance( Class<?> excelClass, String... ignores){
         Excel annotation = excelClass.getAnnotation(Excel.class);
         Objects.requireNonNull(annotation, "not found instance... entity require use @Excel annotation");
         //获取到所有对象属性
@@ -49,9 +49,9 @@ public class ParamResolve {
     /**
      * 验证excel上传字段值是否符合规则
      * @param field
-     * @param paramLenth
+     * @param cell
      */
-    public static void validtor(Field field,String paramLenth){
+    public static boolean validtor(Field field, Cell cell){
         //字段最大长度、最小长度、是否必填
         FieldExcel fieldAnnotation = field.getAnnotation(FieldExcel.class);
         //正则表达式验证
@@ -59,15 +59,18 @@ public class ParamResolve {
         if(null != fieldAnnotation){
             //如果是必传字段则验证字段的最大长度和最小长度
             if(fieldAnnotation.require()){
-                ParamUtils.max(fieldAnnotation.maxLenth(),paramLenth.length());
-                ParamUtils.min(fieldAnnotation.minLenth(),paramLenth.length());
+                //验证设定的最大程度
+                ParamUtils.max(fieldAnnotation.maxLenth(), cell.toString().trim().length());
+                //验证设定的最小长度
+                ParamUtils.min(fieldAnnotation.minLenth(), cell.toString().trim().length());
             }
         }
         if(null != fieldRegExp){
-            if(!Regex.isValid(fieldRegExp.value(),paramLenth)){
-                throw new IllegalArgumentException(field.getName() + " 字段值=== " + paramLenth + "不符合正则规则");
+            if(!Regex.isValid(fieldRegExp.value(),cell.toString().trim())){
+                throw new IllegalArgumentException(field.getName() + " 字段值=== " + cell.toString().trim() + "不符合正则规则");
             }
         }
+        return true;
     }
 
 

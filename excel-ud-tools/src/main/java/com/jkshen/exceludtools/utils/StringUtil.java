@@ -1,6 +1,8 @@
 package com.jkshen.exceludtools.utils;
 
 
+import org.apache.poi.ss.usermodel.Cell;
+
 /**
  * 验证工具
  */
@@ -27,4 +29,18 @@ public class StringUtil {
         }
         return false;
     }
+
+    /**
+     * 判断列是否为空
+     * @param cell
+     * @return
+     */
+    public static boolean cellEmpty(Cell cell,int nullCellNumb){
+        if(cell ==  null || "".equals(cell.toString().trim())){
+            nullCellNumb = nullCellNumb+1;
+            return true;
+        }
+        return false;
+    }
+
 }

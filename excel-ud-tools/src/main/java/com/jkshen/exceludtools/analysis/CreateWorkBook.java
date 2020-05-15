@@ -9,7 +9,6 @@ import java.io.InputStream;
 /**
  * @Author zhangZaiShen
  * @Description 创建文件类型
- * @Date $ $
  **/
 public class CreateWorkBook {
     /**
@@ -27,6 +26,21 @@ public class CreateWorkBook {
         }
         return null;
     }
+
+    /**
+     * 关闭文件流，就算出现异常也要关闭文件流
+     * @param workbook
+     */
+    public static void close(Workbook workbook){
+        try {
+            if(null != workbook){
+                workbook.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 获取到页
      * @param wb
@@ -64,6 +78,22 @@ public class CreateWorkBook {
     public static Cell readCell(Row row, int num){
         Cell cell = row.getCell(num);
         return cell;
+    }
+
+    /**
+     * 获取新实例
+     * @param c
+     * @return
+     */
+    public static Class newInstance(Class c){
+        try {
+            return (Class)c.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -66,24 +66,4 @@ public class ParamUtils {
         return true;
     }
 
-
-    /**
-     * 验证必填字段是否为非空
-     * @param fieldsIsNonNulls
-     * @param fieldsNames
-     * @param cnum
-     * @return
-     */
-    public static boolean isNonNull(List<String> fieldsIsNonNulls, List<String> fieldsNames, int cnum){
-        for (int x=0;x<fieldsIsNonNulls.size();x++){
-            if(fieldsNames.size()-1<cnum){
-                break;
-            }
-            if(fieldsIsNonNulls.get(x).equals(fieldsNames.get(cnum))){
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
