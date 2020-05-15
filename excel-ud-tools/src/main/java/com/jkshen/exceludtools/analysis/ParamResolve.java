@@ -1,5 +1,6 @@
 package com.jkshen.exceludtools.analysis;
 
+import com.jkshen.exceludtools.TestBean;
 import com.jkshen.exceludtools.annotation.Excel;
 import com.jkshen.exceludtools.annotation.FieldExcel;
 import com.jkshen.exceludtools.annotation.FieldRegExp;
@@ -73,5 +74,8 @@ public class ParamResolve {
         return true;
     }
 
+    public static void main(String[] args) {
+        resolveInstance(TestBean.class);
+    }
 
 }

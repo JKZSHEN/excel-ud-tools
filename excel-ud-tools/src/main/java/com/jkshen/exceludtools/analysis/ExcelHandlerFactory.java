@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,44 +53,46 @@ public class ExcelHandlerFactory {
      * @param ignores
      */
     public static void resolve(InputStream in, String fileName, Class<?> excelClass, List<Field> fieldList, String... ignores){
+        //存放实例集合
+        List<Object> list = new ArrayList<>();
         //创建工作薄
         Workbook workbook = CreateWorkBook.create(in);
-        //读取页
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            //页
-            Sheet sheet = CreateWorkBook.readSheet(workbook, i);
-            int rowNum = sheet.getLastRowNum()+1;
-            for (int j = 0; j < rowNum; j++) {
-                int nullCellNumb = 0;
-                //行
-                Row row = CreateWorkBook.readRow(sheet, j);
-                int cellNum = row.getLastCellNum();
-                for (int k = 0; k < cellNum; k++) {
-                    //获取当前行的某一列
-                    Cell cell = row.getCell(k);
-                    if(StringUtil.cellEmpty(cell,nullCellNumb)){
-                        //检查到连续十列为空跳出当前行，执行下一行
-                        if(nullCellNumb > 10){
-                            break;
+        try {
+            //读取页
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                //页
+                Sheet sheet = CreateWorkBook.readSheet(workbook, i);
+                int rowNum = sheet.getLastRowNum()+1;
+                for (int j = 0; j < rowNum; j++) {
+                    int nullCellNumb = 0;
+                    //行
+                    Row row = CreateWorkBook.readRow(sheet, j);
+                    int cellNum = row.getLastCellNum();
+                    for (int k = 0; k < cellNum; k++) {
+                        //获取当前行的某一列
+                        Cell cell = row.getCell(k);
+                        if(StringUtil.cellEmpty(cell,nullCellNumb)){
+                            //检查到连续十列为空跳出当前行，执行下一行
+                            if(nullCellNumb > 10){
+                                break;
+                            }
                         }
-                    }
-                    //验证自动是否符合规则
-                    ParamResolve.validtor(fieldList.get(k),cell);
-                    //获取新实例
-                    Class aClass = CreateWorkBook.newInstance(excelClass);
-                    //列不为空的时候写入对象
-                    MappingField.reflexField(aClass,cell,fieldList.get(k));
+                        //验证自动是否符合规则
+                        ParamResolve.validtor(fieldList.get(k),cell);
+                        //获取新实例
+                        Class aClass = CreateWorkBook.newInstance(excelClass);
+                        //列不为空的时候写入对象
+                        MappingField.reflexField(aClass,cell,fieldList.get(k));
+                        list.add(aClass);
 
+                    }
 
                 }
-
             }
-
-
+        }finally {
+            //关闭
+            CreateWorkBook.close(workbook);
         }
-
-
-
 
     }
 
