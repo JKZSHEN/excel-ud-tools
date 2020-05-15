@@ -10,13 +10,13 @@ public @interface FieldExcel {
      * 字段最大长度
      * @return
      */
-    int maxLenth();
+    long maxLenth();
 
     /**
      * 字段最小长度
      * @return
      */
-    int minLenth();
+    long minLenth();
 
     /**
      * 字段是否为必填

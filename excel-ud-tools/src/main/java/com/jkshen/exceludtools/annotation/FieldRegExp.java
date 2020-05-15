@@ -15,7 +15,7 @@ public @interface FieldRegExp {
      * 正则验证表达式
      * @return
      */
-    String value() default "";
+    String value();
 
     /**
      * 返回信息给开发人员
