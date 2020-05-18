@@ -12,9 +12,9 @@ import lombok.Data;
 @Excel
 @Data
 public class TestBean  extends SuperBean{
-    @FieldExcel(maxLenth = 100,require = true,minLenth = 10)
+    @FieldExcel(maxLenth = 100,require = true,minLenth = 1)
     private String name;
-    @FieldExcel(minLenth = 2,require = true,maxLenth = 200)
+    @FieldExcel(minLenth = 0,require = true,maxLenth = 200)
     private String addr;
 
     private Integer age;

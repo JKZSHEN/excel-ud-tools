@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Cell;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +68,11 @@ public class ParamResolve {
             }
         }
         if(null != fieldRegExp){
-            if(!Regex.isValid(fieldRegExp.value(),cell.toString().trim())){
+            String value = cell.toString().trim();
+            if(field.getType().getName().equals("java.lang.Integer")){
+                value = new BigDecimal(cell.toString().trim()).setScale(0,BigDecimal.ROUND_HALF_UP).toString();
+            }
+            if(!Regex.isValid(value,fieldRegExp.value())){
                 throw new IllegalArgumentException(field.getName() + " 字段值=== " + cell.toString().trim() + "不符合正则规则");
             }
         }

@@ -1,6 +1,7 @@
 package com.jkshen.exceludtools.analysis;
 
 
+import com.jkshen.exceludtools.TestBean;
 import com.jkshen.exceludtools.utils.StringUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,8 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ExcelHandlerFactory {
      * @param excelClass
      * @param ignores
      */
-    public static void resolve(InputStream in, String fileName, Class<?> excelClass, List<Field> fieldList, String... ignores){
+    public static <T> void resolve(InputStream in, String fileName, Class<?> excelClass, List<Field> fieldList, String... ignores){
         //存放实例集合
         List<Object> list = new ArrayList<>();
         //创建工作薄
@@ -63,7 +63,9 @@ public class ExcelHandlerFactory {
                 //页
                 Sheet sheet = CreateWorkBook.readSheet(workbook, i);
                 int rowNum = sheet.getLastRowNum()+1;
-                for (int j = 0; j < rowNum; j++) {
+                for (int j = 1; j < rowNum; j++) {
+                    //获取新实例
+                    T aClass = CreateWorkBook.newInstance(excelClass);
                     int nullCellNumb = 0;
                     //行
                     Row row = CreateWorkBook.readRow(sheet, j);
@@ -79,21 +81,25 @@ public class ExcelHandlerFactory {
                         }
                         //验证自动是否符合规则
                         ParamResolve.validtor(fieldList.get(k),cell);
-                        //获取新实例
-                        Class aClass = CreateWorkBook.newInstance(excelClass);
                         //列不为空的时候写入对象
                         MappingField.reflexField(aClass,cell,fieldList.get(k));
-                        list.add(aClass);
-
                     }
-
+                    list.add(aClass);
                 }
             }
         }finally {
             //关闭
             CreateWorkBook.close(workbook);
         }
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+    }
 
+    public static void main(String[] args) throws FileNotFoundException {
+        File file = new File("D:\\study\\文件解析.xlsx");
+        InputStream in = new FileInputStream(file);
+        resolve(in,"文件解析.xlsx", TestBean.class);
     }
 
 

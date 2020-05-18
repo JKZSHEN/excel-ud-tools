@@ -12,8 +12,8 @@ import lombok.Data;
 
 @Data
 public class SuperBean {
-    @FieldExcel(maxLenth =100,minLenth =2,require = true)
-    @FieldRegExp(value = "^[0|+][0-9]{2,3}-[0-9]{7,8}$")
-    private String sex;
+    @FieldExcel(maxLenth =100,minLenth =0,require = true)
+    @FieldRegExp(value = "^[0-9]*$")
+    private Integer sex;
 
 }
