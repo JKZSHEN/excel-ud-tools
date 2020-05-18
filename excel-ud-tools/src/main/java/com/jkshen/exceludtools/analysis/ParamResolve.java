@@ -28,7 +28,7 @@ public class ParamResolve {
      * @param ignores 过滤字段（实体类有注解excel没有字段需要过滤）
      * @return
      */
-    public static List<Field> resolveInstance( Class<?> excelClass, String... ignores){
+    public static <T> List<Field> resolveInstance(Class<T>  excelClass, String... ignores){
         Excel annotation = excelClass.getAnnotation(Excel.class);
         Objects.requireNonNull(annotation, "not found instance... entity require use @Excel annotation");
         //获取到所有对象属性

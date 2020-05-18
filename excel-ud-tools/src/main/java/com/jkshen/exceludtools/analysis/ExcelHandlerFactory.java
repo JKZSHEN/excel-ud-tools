@@ -24,37 +24,38 @@ public class ExcelHandlerFactory {
      * 通过输入流传入
      * @param in
      * @param fileName
-     * @param excelClass
+     * @param entityClass
      * @param ignores
      */
-    public static void resolve(InputStream in,String fileName,Class<?> excelClass,String... ignores){
-        resolve(in,fileName,excelClass,ParamResolve.resolveInstance(excelClass),ignores);
+    public static <T> List<T> resolve(InputStream in,String fileName,Class<T> entityClass,String... ignores){
+        return resolve(in,fileName,entityClass,ParamResolve.resolveInstance(entityClass),ignores);
     }
 
     /**
      * 通过MultipartFile传入
      * @param file
-     * @param excelClass
+     * @param entityClass
      * @param ignores
      */
-    public static void resolve(MultipartFile file,Class<?> excelClass,String... ignores){
+    public static <T> List<T> resolve(MultipartFile file,Class<T> entityClass,String... ignores){
         try {
-            resolve(file.getInputStream(),file.getOriginalFilename(),excelClass,ParamResolve.resolveInstance(excelClass),ignores);
+            return resolve(file.getInputStream(),file.getOriginalFilename(),entityClass,ParamResolve.resolveInstance(entityClass),ignores);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**
      * 解析文件，并活得解析后的对象
      * @param in
      * @param fileName
-     * @param excelClass
+     * @param entityClass
      * @param ignores
      */
-    public static <T> void resolve(InputStream in, String fileName, Class<?> excelClass, List<Field> fieldList, String... ignores){
+    public static <T> List<T> resolve(InputStream in, String fileName,Class<T> entityClass, List<Field> fieldList, String... ignores){
         //存放实例集合
-        List<Object> list = new ArrayList<>();
+        List<T> list = new ArrayList<T>();
         //创建工作薄
         Workbook workbook = CreateWorkBook.create(in);
         try {
@@ -62,10 +63,10 @@ public class ExcelHandlerFactory {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 //页
                 Sheet sheet = CreateWorkBook.readSheet(workbook, i);
-                int rowNum = sheet.getLastRowNum()+1;
-                for (int j = 1; j < rowNum; j++) {
+                int rowNum = sheet.getLastRowNum();
+                for (int j = 1; j <= rowNum; j++) {
                     //获取新实例
-                    T aClass = CreateWorkBook.newInstance(excelClass);
+                    T aClass = CreateWorkBook.newInstance(entityClass);
                     int nullCellNumb = 0;
                     //行
                     Row row = CreateWorkBook.readRow(sheet, j);
@@ -91,15 +92,13 @@ public class ExcelHandlerFactory {
             //关闭
             CreateWorkBook.close(workbook);
         }
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i));
-        }
+        return list;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
         File file = new File("D:\\study\\文件解析.xlsx");
         InputStream in = new FileInputStream(file);
-        resolve(in,"文件解析.xlsx", TestBean.class);
+        List<TestBean> resolve = resolve(in, "文件解析.xlsx", TestBean.class);
     }
 
 

@@ -85,7 +85,7 @@ public class CreateWorkBook {
      * @param c
      * @return
      */
-    public static <T> T newInstance(Class c){
+    public static <T> T newInstance(Class<T>  c){
         try {
             return (T) c.newInstance();
         } catch (InstantiationException e) {
